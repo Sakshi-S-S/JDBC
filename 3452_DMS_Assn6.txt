@@ -1,0 +1,358 @@
+--------------------------------------------------------------
+
+Name : Sakshi Shivnikar
+Roll no.: 3452
+Batch : B4
+Assignment no.: 6
+Problem Statement: Implement MySQL Java Connectivity (2 tier) to implement insert,delete,update,select operations.
+
+Consider employee relation: emp(empno,ename,job,salary,commission,date_of_joining,dept_no)
+
+---------------------------------------------------------------
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.io.*;
+
+public class Assn_6
+{
+	static final String DB_URL="jdbc:mysql://localhost:3306/shoppingcart";
+	static final String USER="Ash";
+	static final String PASS="ash123";
+	public static void main(String args[]) throws SQLException
+	{
+		Connection conn=null;
+		Statement stmt=null;
+		//char c='y';
+		int n;
+		try
+		{
+		Class.forName("com.mysql.jdbc.Driver");
+		System.out.println("Connecting to the database");
+		
+		conn=DriverManager.getConnection(DB_URL,USER,PASS);
+		stmt=conn.createStatement();
+		
+		do
+		{
+			System.out.println("Menu:\n1.Insert\n2.Display\n3.Update\n4.Delete");
+			System.out.println("Enter choice: ");
+			BufferedReader ob=new BufferedReader(new InputStreamReader(System.in));
+			int a=Integer.parseInt(ob.readLine());
+			switch(a)
+			{
+				case 1: System.out.println("Inserting: ");
+				String query="insert into employee(empno,ename,job,salary,commission,date_of_joining,dept_no)"+"values(?,?,?,?,?,?,?)";
+				System.out.println("Enter empno: ");
+				int empno=Integer.parseInt(ob.readLine());
+				System.out.println("Enter emp name: ");
+				String name=ob.readLine();
+				System.out.println("Enter job: ");
+				String job=ob.readLine();
+				System.out.println("Enter salary: ");
+				int salary=Integer.parseInt(ob.readLine());
+				System.out.println("Enter commission: ");
+				int comm=Integer.parseInt(ob.readLine());
+				System.out.println("Enter date of joining: ");
+				String doj=ob.readLine();
+				System.out.println("Enter dept no: ");
+				int dept_no=Integer.parseInt(ob.readLine());
+				
+				PreparedStatement prep_stmt;
+				prep_stmt = conn.prepareStatement(query);
+				prep_stmt.setInt(1,empno);
+				prep_stmt.setString(2,name);
+				prep_stmt.setString(3,job);
+				prep_stmt.setInt(4,salary);
+				prep_stmt.setInt(5,comm);
+				prep_stmt.setString(6,doj);
+				prep_stmt.setInt(7,dept_no);
+				prep_stmt.execute();
+				//conn.close();
+				
+				//stmt.executeUpdate(query);
+				break;
+				
+				case 2: System.out.println("Database contains: ");
+				query="Select * from employee";
+				int count=0;
+				ResultSet rs=stmt.executeQuery(query);
+				while(rs.next())
+				{
+					dept_no=rs.getInt("dept_no");
+					empno=rs.getInt("empno");
+					salary=rs.getInt("salary");
+					comm=rs.getInt("commission");
+					name=rs.getString("ename");
+					job=rs.getString("job");
+					doj=rs.getString("date_of_joining");
+					
+					String output= "User #%d: %d - %s - %s - %d - %d - %s - %d";
+					System.out.println(String.format(output, ++count, empno, name, job, salary, comm, doj, dept_no));
+				}
+				//conn.close();
+				break;
+				
+				case 3:System.out.println("Updating: ");
+				System.out.println("Enter empno to be updated");
+				empno=Integer.parseInt(ob.readLine());
+				
+				System.out.println("Want to update job? ");
+				int c=Integer.parseInt(ob.readLine());
+				if(c==1)
+				{
+					System.out.println("Enter job: ");
+					job=ob.readLine();
+					query = "update employee set job=? "+"where empno=?";
+					prep_stmt=conn.prepareStatement(query);
+					prep_stmt.setString(1,job);
+					prep_stmt.setInt(2,empno);
+					prep_stmt.execute();
+				}
+				
+				System.out.println("Want to update salary? ");
+				c=Integer.parseInt(ob.readLine());
+				if(c==1)
+				{
+					System.out.println("Enter salary: ");
+					salary=Integer.parseInt(ob.readLine());
+					query = "update employee set salary=? "+"where empno=?";
+					prep_stmt=conn.prepareStatement(query);
+					prep_stmt.setInt(1,salary);
+					prep_stmt.setInt(2,empno);
+					prep_stmt.execute();
+				}
+				
+				System.out.println("Want to update commission? ");
+				c=Integer.parseInt(ob.readLine());
+				if(c==1)
+				{
+					System.out.println("Enter commission: ");
+					comm=Integer.parseInt(ob.readLine());
+					query = "update employee set commission=? "+"where empno=?";
+					prep_stmt=conn.prepareStatement(query);
+					prep_stmt.setInt(1,comm);
+					prep_stmt.setInt(2,empno);
+					prep_stmt.execute();
+				}
+				
+				System.out.println("Want to update dept no? ");
+				c=Integer.parseInt(ob.readLine());
+				if(c==1)
+				{
+					System.out.println("Enter dept no: ");
+					dept_no=Integer.parseInt(ob.readLine());
+					query = "update employee set dept_no=? "+"where empno=?";
+					prep_stmt=conn.prepareStatement(query);
+					prep_stmt.setInt(1,dept_no);
+					prep_stmt.setInt(2,empno);
+					prep_stmt.execute();
+				}
+				break;
+				
+				case 4:System.out.println("Deleting: ");
+				System.out.println("Enter empno to be deleted: ");
+				empno=Integer.parseInt(ob.readLine());
+				query = "delete from employee where empno=?";
+				prep_stmt=conn.prepareStatement(query);
+				prep_stmt.setInt(1,empno);
+				prep_stmt.execute();
+				//conn.close();
+				break;
+				
+				default:System.out.println("Invalid input!");
+			}
+			System.out.println("Continue? (1=yes/0=no) ");
+			n=Integer.parseInt(ob.readLine());
+		}while(n==1);
+		
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+	}
+}
+
+
+
+
+/*OUTPUT:
+Connecting to the database
+Loading class `com.mysql.jdbc.Driver'. This is deprecated. The new driver class is `com.mysql.cj.jdbc.Driver'. The driver is automatically registered via the SPI and manual loading of the driver class is generally unnecessary.
+Menu:
+1.Insert
+2.Display
+3.Update
+4.Delete
+Enter choice: 
+2
+Database contains: 
+User #1: 1 - Sakshi Shivnikar - Technical Analyst - 35000 - 5 - 2021-11-20 - 2
+Continue? (1=yes/0=no) 
+1
+Menu:
+1.Insert
+2.Display
+3.Update
+4.Delete
+Enter choice: 
+1
+Inserting: 
+Enter empno: 
+3
+Enter emp name: 
+Pushkar Joshi
+Enter job: 
+Software Engineer
+Enter salary: 
+75000
+Enter commission: 
+2
+Enter date of joining: 
+2021-11-22
+Enter dept no: 
+1
+Continue? (1=yes/0=no) 
+1
+Menu:
+1.Insert
+2.Display
+3.Update
+4.Delete
+Enter choice: 
+1
+Inserting: 
+Enter empno: 
+5
+Enter emp name: 
+Sakshi Bhonde
+Enter job: 
+Receptionist
+Enter salary: 
+5000
+Enter commission: 
+2
+Enter date of joining: 
+2021-09-11
+Enter dept no: 
+5
+Continue? (1=yes/0=no) 
+1
+Menu:
+1.Insert
+2.Display
+3.Update
+4.Delete
+Enter choice: 
+2
+Database contains: 
+User #1: 1 - Sakshi Shivnikar - Technical Analyst - 35000 - 5 - 2021-11-20 - 2
+User #2: 3 - Pushkar Joshi - Software Engineer - 75000 - 2 - 2021-11-22 - 1
+User #3: 5 - Sakshi Bhonde - Receptionist - 5000 - 2 - 2021-09-11 - 5
+Continue? (1=yes/0=no) 
+1
+Menu:
+1.Insert
+2.Display
+3.Update
+4.Delete
+Enter choice: 
+1
+Inserting: 
+Enter empno: 
+2
+Enter emp name: 
+Shruti Sharma
+Enter job: 
+Architect
+Enter salary: 
+39000
+Enter commission: 
+2
+Enter date of joining: 
+2021-11-11
+Enter dept no: 
+3
+Continue? (1=yes/0=no) 
+1
+Menu:
+1.Insert
+2.Display
+3.Update
+4.Delete
+Enter choice: 
+2
+Database contains: 
+User #1: 1 - Sakshi Shivnikar - Technical Analyst - 30000 - 5 - 2021-11-20 - 2
+User #2: 3 - Pushkar Joshi - Software Engineer - 75000 - 2 - 2021-11-22 - 1
+User #3: 5 - Sakshi Bhonde - Receptionist - 5000 - 2 - 2021-09-11 - 5
+User #4: 2 - Shruti Sharma - Architect - 39000 - 2 - 2021-11-11 - 3
+Continue? (1=yes/0=no) 
+1
+Menu:
+1.Insert
+2.Display
+3.Update
+4.Delete
+Enter choice: 
+3
+Updating: 
+Enter empno to be updated
+3
+Want to update job? 
+0
+Want to update salary? 
+1
+Enter salary: 
+50000
+Want to update commission? 
+0
+Want to update dept no? 
+0
+Continue? (1=yes/0=no) 
+1
+Menu:
+1.Insert
+2.Display
+3.Update
+4.Delete
+Enter choice: 
+2
+Database contains: 
+User #1: 1 - Sakshi Shinvikar - Technical Analyst - 35000 - 5 - 2021-11-20 - 2
+User #2: 3 - Pushkar Joshi - Software Engineer - 50000 - 2 - 2021-11-22 - 1
+User #3: 5 - Sakshi Bhonde - Receptionist - 5000 - 2 - 2021-09-11 - 5
+User #4: 2 - Shruti Sharma - Architect - 39000 - 2 - 2021-11-11 - 3
+Continue? (1=yes/0=no) 
+1
+Menu:
+1.Insert
+2.Display
+3.Update
+4.Delete
+Enter choice: 
+4
+Deleting: 
+Enter empno to be deleted: 
+5
+Continue? (1=yes/0=no) 
+1
+Menu:
+1.Insert
+2.Display
+3.Update
+4.Delete
+Enter choice: 
+2
+Database contains: 
+User #1: 1 - Sakshi Shivnikar - Technical Analyst - 35000 - 5 - 2021-11-20 - 2
+User #2: 3 - Pushkar Joshi - Software Engineer - 50000 - 2 - 2021-11-22 - 1
+User #3: 2 - Shruti Sharma - Architect - 39000 - 2 - 2021-11-11 - 3
+Continue? (1=yes/0=no) 
+0
+
+*/
